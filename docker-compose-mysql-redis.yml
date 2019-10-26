@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+    mysql:
+        container_name: sf4_redis_mysql
+        build:
+            context: ./Infrastructure/db
+            dockerfile: Dockerfile.mysql
+        volumes:
+            - ./.data/mysql:/var/lib/mysql:rw
+        env_file:
+            - .env
+        ports:
+            - "3306:3306"
+
+    redis:
+        container_name: sf4_redis_redis
+        build:
+            context: ./Infrastructure/redis
+        ports:
+            - "6379:6379"

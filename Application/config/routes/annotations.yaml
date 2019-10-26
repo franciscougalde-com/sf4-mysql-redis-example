@@ -1,0 +1,9 @@
+api_controller:
+    resource: ../../src/Controller/ApiController.php
+    type: annotation
+    prefix: /api/v1
+
+health_check_controller:
+    resource: ../../src/Controller/HealthCheckController.php
+    type: annotation
+

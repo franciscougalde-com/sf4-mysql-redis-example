@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+    app:
+        container_name: sf4_redis_app
+        build:
+            context: ./Infrastructure/app
+            args:
+                - timezone=${TZ}
+        volumes:
+            #            - ./Application:/var/www/html:rw,cached
+            - ./Application:/var/www/html:rw
+        env_file:
+            - .env
+        environment:
+            XDEBUG_CONFIG: remote_host=${XDEBUG_REMOTE_HOST}
+            PHP_IDE_CONFIG: serverName=${NGINX_HOST}
+
+    nginx:
+        container_name: sf4_redis_nginx
+        build:
+            context: ./Infrastructure/nginx
+            args:
+                - nginx_host=${NGINX_HOST}
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - app
+        volumes:
+            - ./Application/public:/var/www/html/public:ro
+            - ./Infrastructure/nginx/default.template:/etc/nginx/conf.d/default.template
+            - nginx_log:/var/log/nginx
+        env_file:
+            - .env
+        command: /bin/bash -c "envsubst '$$NGINX_HOST'
+            < /etc/nginx/conf.d/default.template
+            > /etc/nginx/conf.d/default.conf
+            && exec nginx -g 'daemon off;'"
+
+volumes:
+    nginx_log:
